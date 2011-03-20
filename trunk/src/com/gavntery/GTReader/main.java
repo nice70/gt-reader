@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class main extends Activity {
@@ -23,7 +25,17 @@ public class main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		
+		//Start of hiding status and title bar
+		final Window win = getWindow();
+		//Hiding Status Bar
+		win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//Hiding Title Bar
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//End of hiding status and title bar
+		
+		setContentView(R.layout.viewer);
 		textView_reader = (TextView)findViewById(R.id.textView_reader);
 		String file_text = read_file(test_text);
 		textView_reader.setText(file_text);
