@@ -7,9 +7,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -28,8 +30,6 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	private TextView textView_reader;
 	private GestureDetector mGestureDetector;
 	
-	//private PopupWindow mPopupWindow;
-	private String booknum;
 	private static final int FLING_MIN_DISTANCE = 100;
 	private static final int FLING_MIN_VELOCITY = 200;
 	private int screenWidth =0;
@@ -100,10 +100,11 @@ public class TxtViewer extends Activity implements OnGestureListener {
         SharedPreferences settings = getSharedPreferences(getString(R.string.SETTING_FILENAME), 0);
         SharedPreferences pagenum = getSharedPreferences(getString(R.string.SETTING_BOOKSPAGENUM), 0);
         GetTextCode();
-        Setting_text_size = settings.getInt(getString(R.string.SETTING_TEXTSIZE), 14);
-    	Setting_text_color= settings.getInt(getString(R.string.SETTING_TEXT_COLOR), 0);
-    	Setting_bg_color= settings.getInt(getString(R.string.SETTING_BG_COLOR), 1);
-    	TotalSkipBytes=pagenum.getLong(booknum, 0);
+        Resources res = getResources();
+        Setting_text_size = settings.getInt(getString(R.string.SETTING_TEXTSIZE), res.getInteger(R.integer.DefTextSize));
+    	Setting_text_color= settings.getInt(getString(R.string.SETTING_TEXT_COLOR), res.getInteger(R.integer.DefTextColor));
+    	Setting_bg_color= settings.getInt(getString(R.string.SETTING_BG_COLOR), res.getInteger(R.integer.DefBgColor));
+    	TotalSkipBytes = pagenum.getLong(getString(R.string.SETTING_BOOKSPAGENUM), 0);
 	}
 	
 	private void GetTextCode()
@@ -192,7 +193,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
 			sBuffer=new String(buff,0,CurrentByteInPage);
 			return sBuffer;
 		} catch (Exception e) {
-			System.out.println("Exception happend");
+			//System.out.println("Exception happend");
 			e.printStackTrace();	
 		}
 		return null;
@@ -246,7 +247,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
     {
     	SharedPreferences settings = getSharedPreferences(getString(R.string.SETTING_BOOKSPAGENUM), 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putLong(booknum, TotalSkipBytes);
+        editor.putLong(getString(R.string.SETTING_BOOKSPAGENUM), TotalSkipBytes);
         editor.commit();
     }
 	
@@ -269,7 +270,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
 				}
 			if(TotalLines>=NumCharInColum)
 				{
-				System.out.println("break Line number is "+TotalLines);
+				//System.out.println("break Line number is "+TotalLines);
 				break;
 				}
 		}	
@@ -295,7 +296,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
 			}
 			if(TotalLines>=NumCharInColum)
 				{
-				System.out.println("break Line number is "+TotalLines);
+				//System.out.println("break Line number is "+TotalLines);
 				break;
 				}
 		}	
@@ -313,6 +314,29 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	@Override
 	public boolean onDown(MotionEvent arg0) {
 		// TODO Auto-generated method stub
+		DisplayMetrics dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		screenWidth = dm.widthPixels;
+		//µ±µã»÷ÆÁÄ»×ó²à
+		if(arg0.getX()<(screenWidth/2))
+		{
+			textView_reader.setText(getStringFromFileBackwards(TotalSkipBytes));
+			TotalSkipBytes=TotalSkipBytes-CurrentByteInPage;
+			if(TotalSkipBytes<0)
+				TotalSkipBytes=0;
+			updatePageNum();
+			
+		}
+		//µ±µã»÷ÆÁÄ»ÓÒ²à
+		else if(arg0.getX()>(screenWidth/2))
+		{
+			if(ReadBytes!=-1)
+			{
+				TotalSkipBytes=TotalSkipBytes+CurrentByteInPage;
+				textView_reader.setText(getStringFromFileForward(TotalSkipBytes));
+				updatePageNum();
+			}
+		}
 		return false;
 	}
 
@@ -331,9 +355,9 @@ public class TxtViewer extends Activity implements OnGestureListener {
 				TotalSkipBytes=TotalSkipBytes+CurrentByteInPage;
 				textView_reader.setText(getStringFromFileForward(TotalSkipBytes));
 				updatePageNum();
-				System.out.println("CurrentByteInPage is "+CurrentByteInPage);
-				System.out.println("skipnumber is in getStringFromFile"+TotalSkipBytes);
-				System.out.println("**************Slide to left************");
+				//System.out.println("CurrentByteInPage is "+CurrentByteInPage);
+				//System.out.println("skipnumber is in getStringFromFile"+TotalSkipBytes);
+				//System.out.println("**************Slide to left************");
 			}
 		} else if (e2.getX() - e1.getX() > FLING_MIN_DISTANCE
 				&& Math.abs(velocityX) > FLING_MIN_VELOCITY) {
@@ -347,18 +371,18 @@ public class TxtViewer extends Activity implements OnGestureListener {
 			if(TotalSkipBytes<0)
 				TotalSkipBytes=0;
 			updatePageNum();
-			System.out.println("CurrentByteInPage is "+CurrentByteInPage);
-			System.out.println("skipnumber is in getStringFromFile"+TotalSkipBytes);
-			System.out.println("**************Slide to right************");
+			//System.out.println("CurrentByteInPage is "+CurrentByteInPage);
+			//System.out.println("skipnumber is in getStringFromFile"+TotalSkipBytes);
+			//System.out.println("**************Slide to right************");
 		}
 		
 		return false;
 	}
-	
+
 	@Override
 	public void onLongPress(MotionEvent arg0) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -371,7 +395,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	@Override
 	public void onShowPress(MotionEvent arg0) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -379,5 +403,4 @@ public class TxtViewer extends Activity implements OnGestureListener {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }
