@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,7 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class FileBrowser extends Activity {
-	
+
 	private FileAdapter fileAdapter;
 	private ListView listView_files;
 	private File currDir;
@@ -49,12 +51,22 @@ public class FileBrowser extends Activity {
 	public void onResume()
 	{
 		super.onResume();
-		
-		String currPath = "/";
+		SharedPreferences setting = getSharedPreferences(getString(R.string.SETTING_FILENAME), 0);
+		String currPath = setting.getString(getString(R.string.SETTING_FILEPATH), "/");
 		
 		currDir = new File(currPath);
 		
 		setCurrentDir(currDir);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		SharedPreferences setting = getSharedPreferences(getString(R.string.SETTING_FILENAME), 0);
+		SharedPreferences.Editor editor = setting.edit();
+		editor.putString(getString(R.string.SETTING_FILEPATH), currDir.getPath());
+		editor.commit();
+		super.onPause();
 	}
 	
 	private void findViews()
