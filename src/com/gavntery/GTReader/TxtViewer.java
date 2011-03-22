@@ -98,13 +98,12 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	private void LoadSettings()
 	{
         SharedPreferences settings = getSharedPreferences(getString(R.string.SETTING_FILENAME), 0);
-        SharedPreferences pagenum = getSharedPreferences(getString(R.string.SETTING_BOOKSPAGENUM), 0);
         GetTextCode();
         Resources res = getResources();
         Setting_text_size = settings.getInt(getString(R.string.SETTING_TEXTSIZE), res.getInteger(R.integer.DefTextSize));
     	Setting_text_color= settings.getInt(getString(R.string.SETTING_TEXT_COLOR), res.getInteger(R.integer.DefTextColor));
     	Setting_bg_color= settings.getInt(getString(R.string.SETTING_BG_COLOR), res.getInteger(R.integer.DefBgColor));
-    	TotalSkipBytes = pagenum.getLong(getString(R.string.SETTING_BOOKSPAGENUM), 0);
+    	TotalSkipBytes = settings.getLong(getString(R.string.SETTING_BOOKSPAGENUM), 0);
 	}
 	
 	private void GetTextCode()
@@ -245,7 +244,7 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	//Record skip how many bytes, so it is like page number
     private void updatePageNum()
     {
-    	SharedPreferences settings = getSharedPreferences(getString(R.string.SETTING_BOOKSPAGENUM), 0);
+    	SharedPreferences settings = getSharedPreferences(getString(R.string.SETTING_FILENAME), 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(getString(R.string.SETTING_BOOKSPAGENUM), TotalSkipBytes);
         editor.commit();
