@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <resources>
+        <string name="settingTitle_textSize">Text Size</string>
+        <string name="settingTitle_textColor">Text Color</string>
+        <string name="settingTitle_viewerBGColor">Background Color</string>
+    </resources>
