@@ -12,7 +12,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Rect;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -26,9 +27,10 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	
 	//private String SDPATH = Environment.getExternalStorageDirectory() + "/";
 	
-	String fileName;// = SDPATH + "book/test.txt";
+	String fileName;
 	private TextView textView_reader;
 	private GestureDetector mGestureDetector;
+	private Paint mPaint = null;
 	
 	private static final int FLING_MIN_DISTANCE = 100;
 	private static final int FLING_MIN_VELOCITY = 200;
@@ -90,6 +92,8 @@ public class TxtViewer extends Activity implements OnGestureListener {
 		GetDimensionOfView();
 		
 		textView_reader.setTextSize(Setting_text_size);
+		System.out.println("textView_reader TextSize = " + textView_reader.getTextSize());
+		System.out.println("Setting_text_size = " + Setting_text_size);
 		textView_reader.setTextColor(DefaultSetting.color[Setting_text_color]);
 		textView_reader.setBackgroundColor(DefaultSetting.color[Setting_bg_color]);
 		textView_reader.setText(getStringFromFileForward(TotalSkipBytes));
@@ -145,14 +149,14 @@ public class TxtViewer extends Activity implements OnGestureListener {
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		screenWidth = dm.widthPixels;
 		screenHeight = dm.heightPixels;
-		Rect frame = new Rect();
-		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
-		int statusBarHeight = frame.top;
-		int contentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-		//statusBarHeight是上面所求的状态栏的高度
-		int titleBarHeight = contentTop - statusBarHeight;
-		screenHeight=screenHeight-(titleBarHeight+statusBarHeight);
-		MaxBytesPerPage=MaxBytesPerPage();
+//		Rect frame = new Rect();
+//		getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+//		int statusBarHeight = frame.top;
+//		int contentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+//		//statusBarHeight是上面所求的状态栏的高度
+//		int titleBarHeight = contentTop - statusBarHeight;
+//		screenHeight=screenHeight-(titleBarHeight+statusBarHeight);
+		MaxBytesPerPage= 2 * MaxBytesPerPage();
 	}
 	
 	/*
@@ -252,52 +256,129 @@ public class TxtViewer extends Activity implements OnGestureListener {
 	
 	private void calculateBytesNeed(char[] data)
 	{
-		int TotalLines=0;
-		int NewLineBytes=0;
+		int totalLines=0;
+		int newLineCharTotalWidth=0;
+//		int isStart = 0;
 		int i=0;
+		mPaint = textView_reader.getPaint();
+		System.out.println("textView_reader TextSize2 = " + textView_reader.getTextSize());
+		System.out.println("textSize = " + mPaint.getTextSize());
+		
+		FontMetrics fm = mPaint.getFontMetrics();
+		int m_iFontHeight = (int) Math.ceil(fm.descent - fm.top);//字体高度
+		System.out.println("fm.ascent = " + fm.ascent);
+		System.out.println("fm.descent = " + fm.descent);
+		System.out.println("fm.bottom = " + fm.bottom);
+		System.out.println("fm.top = " + fm.top);
+		System.out.println("m_iFontHeight = " + m_iFontHeight);
+		System.out.println("MaxBytesPerPage = " + MaxBytesPerPage);
+		System.out.println("screenHeight = " + screenHeight);
+		System.out.println("screenWidth = " + screenWidth);
+		
 		for(i=0;i<MaxBytesPerPage;i++)
 		{
-			NewLineBytes++;
-			if(NewLineBytes%NumCharInRow==0)
-			{
-				TotalLines++;
-			}
+			//NewLineBytes++;
+			float[] char_width = new float[1];
+			String str = String.valueOf(data[i]);
+			mPaint.getTextWidths(str, char_width);
+			
+//			if(NewLineBytes%NumCharInRow==0)
+//			{
+//				TotalLines++;
+//			}
 			if(data[i]=='\n')
 			{
-				NewLineBytes=0;
-				TotalLines++;
-				}
-			if(TotalLines>=NumCharInColum)
+				newLineCharTotalWidth=0;
+//				isStart = i + 1;
+				totalLines++;
+			}
+			else
+			{
+				newLineCharTotalWidth += (int)(Math.ceil(char_width[0]));
+				if(newLineCharTotalWidth > screenWidth) 
 				{
-				//System.out.println("break Line number is "+TotalLines);
-				break;
+					totalLines++;
+//					isStart = i;
+					i--;
+					newLineCharTotalWidth = 0;
 				}
+				else
+				{
+					if(i == data.length)
+					{
+						totalLines++;
+					}
+				}
+			}
+			if((m_iFontHeight * totalLines) > screenHeight) 
+			{
+				CurrentByteInPage=i+1;
+				System.out.println("totalLines(return) = " + totalLines);
+				System.out.println("CurrentByteInPage(return)  = " + CurrentByteInPage);
+				return;
+			}
+//			if(totalLines>=NumCharInColum)
+//			{
+//				//System.out.println("break Line number is "+TotalLines);
+//				break;
+//			}
 		}	
 		CurrentByteInPage=i+1;
+		System.out.println("totalLines = " + totalLines);
+		System.out.println("CurrentByteInPage = " + CurrentByteInPage);
 	}
 	
 	private void calculateBytesNeedBackwards(char[] data)
 	{
-		int TotalLines=0;
-		int NewLineBytes=0;
+		int totalLines=0;
+		int newLineCharTotalWidth=0;
 		int i=0;
+		mPaint = textView_reader.getPaint();
+		FontMetrics fm = mPaint.getFontMetrics();
+		int m_iFontHeight = (int) Math.ceil(fm.descent - fm.top) + 4;//字体高度
+		
 		for(i=MaxBytesPerPage-1;i>=0;i--)
 		{
-			NewLineBytes++;
-			if(NewLineBytes%NumCharInRow==0)
-			{
-				TotalLines++;
-			}
+			float[] char_width = new float[1];
+			String str = String.valueOf(data[i]);
+			mPaint.getTextWidths(str, char_width);
+//			if(NewLineBytes%NumCharInRow==0)
+//			{
+//				TotalLines++;
+//			}
 			if(data[i]=='\n')
 			{
-				NewLineBytes=0;
-				TotalLines++;
+				newLineCharTotalWidth=0;
+				totalLines++;
 			}
-			if(TotalLines>=NumCharInColum)
+			else
+			{
+				newLineCharTotalWidth += (int)(Math.ceil(char_width[0]));
+				if(newLineCharTotalWidth > screenWidth) 
 				{
-				//System.out.println("break Line number is "+TotalLines);
-				break;
+					totalLines++;
+//					isStart = i;
+					i--;
+					newLineCharTotalWidth = 0;
 				}
+				else
+				{
+					if(i == data.length)
+					{
+						totalLines++;
+					}
+				}
+			}
+			if((m_iFontHeight * totalLines) > screenHeight) 
+			{
+				CurrentByteInPage=MaxBytesPerPage-i;
+				return;
+			}
+//			if(totalLines>=NumCharInColum)
+//			{
+//				//System.out.println("break Line number is "+TotalLines);
+//				break;
+//			}
 		}	
 		//翻页之后的
 		CurrentByteInPage=MaxBytesPerPage-i;
