@@ -9,7 +9,7 @@
 	<string name="SETTING_BG_COLOR">Setting_Bg_Color</string>
 	<string name="SETTING_TEXT_COLOR">Setting_Text_Color</string>
 	<integer name="SETTING_RETURN">1</integer >
-	<integer name="DefTextSize">14</integer >
+	<integer name="DefTextSize">50</integer >
 	<integer name="DefTextCode">0</integer >
 	<integer name="DefTextColor">0</integer >
 	<integer name="DefBgColor">1</integer >

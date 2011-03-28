@@ -14,7 +14,7 @@ public class DefaultSetting {
 //	public static int DefTextSize=14;
 //	public static int DefTextCode=0;
 //	public static int DefTextColor=0;
-	public static float LineSpace=2.0f;
+	public static float LineSpace=2.1f;
 //	public static String EncodFormat[]={"GBK","UNICODE","UTF-8"};
 //	public static String TextColorType[]={"White","Black","Yellow","Red","Green"};
 //	public static String BackgroundColorType[]={"White","Black","Yellow","Red","Green"};

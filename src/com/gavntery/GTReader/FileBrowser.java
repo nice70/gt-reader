@@ -277,7 +277,7 @@ public class FileBrowser extends Activity {
 		try 
 		{
 			Intent intent = new Intent();
-			intent.setClass(FileBrowser.this, TxtViewer.class);
+			intent.setClass(FileBrowser.this, TxtViewerActivity.class);
 			intent.putExtra(getString(R.string.SETTING_FILEPATH), f.getCanonicalPath());
 			
 			startActivity(intent);
