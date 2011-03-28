@@ -4,9 +4,10 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fadingEdge="vertical"
     >
-	<TextView android:id="@+id/textView_reader"
+	<com.gavntery.GTReader.TxtViewer 
+		xmlns:myspace="http://schemas.android.com/apk/res/com.gavntery.GTReader"
+		android:id="@+id/textView_reader"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		/>

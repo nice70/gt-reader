@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <declare-styleable name="MyView">
+        <attr name="Text" format="string"></attr>
+        <attr name="Oriental">
+            <enum name="Horizontal" value="1"></enum>
+            <enum name="Vertical" value="0"></enum>
+        </attr>
+        <attr name="Color" format="color"></attr>
+        <attr name="TextSize" format="integer"></attr>
+    </declare-styleable>
+</resources>
