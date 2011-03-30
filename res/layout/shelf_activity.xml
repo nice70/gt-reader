@@ -4,11 +4,19 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent" 
 	android:id="@+id/linearLayout_shelf" 
-	android:background="@drawable/bookshelf" android:orientation="vertical">
+	android:orientation="vertical">
 	
-	<ListView android:id="@+id/ListView_shelf"
+	<LinearLayout android:id="@+id/linearLayout_shelfHeader"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		
+	</LinearLayout>
+	
+	<ListView android:id="@+id/listView_shelf"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:background="@drawable/bookshelf">
 		
 	</ListView>
 	
