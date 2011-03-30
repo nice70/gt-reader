@@ -6,12 +6,18 @@
 	android:id="@+id/linearLayout_shelf" 
 	android:orientation="vertical">
 	
-	<LinearLayout android:id="@+id/linearLayout_shelfHeader"
+	<RelativeLayout android:id="@+id/relativeLayout_shelfHeader"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal">
-		
-	</LinearLayout>
+		android:orientation="horizontal"
+		>
+		<ImageView android:id="@+id/imageView_shelfHeader"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:scaleType="fitXY"
+			android:src="@drawable/bookshelf_header"
+			/>
+	</RelativeLayout>
 	
 	<ListView android:id="@+id/listView_shelf"
 		android:layout_width="fill_parent"
